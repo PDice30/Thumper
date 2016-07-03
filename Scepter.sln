@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{E92BED08-D118-500C-5DBA-A3DF671F9C72}") = "Scepter", "Assembly-CSharp.csproj", "{21B06421-4114-456A-B280-866B88230225}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{21B06421-4114-456A-B280-866B88230225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21B06421-4114-456A-B280-866B88230225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21B06421-4114-456A-B280-866B88230225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21B06421-4114-456A-B280-866B88230225}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
