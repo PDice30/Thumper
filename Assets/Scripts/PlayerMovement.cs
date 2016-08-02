@@ -3,8 +3,11 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
 
+	//TODO: Serialize a lot of fields, convert to private variables but still exposed in editor.
 	// Use this for initialization
 	public Rigidbody2D rigidBody;
+
+	Animator anim;
 
 	//Will need to rewrite a lot of this due to augments
 	public bool isAirborne;
@@ -18,6 +21,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	public int maxJumps;
 	public int maxDashes;
+
+	[Range(2.0f, 50.0f)]
 	public float maxVelocity;
 
 	public float accelerationForce;
@@ -25,8 +30,13 @@ public class PlayerMovement : MonoBehaviour {
 
 	public float gravity;
 
+
+	public float verticalSpeed;
+
+
 	void Start () {
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
+		anim = gameObject.GetComponent<Animator> ();
 		isDashing = false;
 		isAirborne = true;
 		maxJumps = 2;
@@ -34,9 +44,9 @@ public class PlayerMovement : MonoBehaviour {
 		maxDashes = 3;
 		currentDashes = 3;
 		dashTime = 0.0f;
-		maxVelocity = 3;
+		maxVelocity = 10f;
 		accelerationForce = 20;
-		jumpingForce = 300;
+		jumpingForce = 700;
 		gravity = rigidBody.gravityScale;
 	}
 
@@ -44,6 +54,28 @@ public class PlayerMovement : MonoBehaviour {
 	void Update () {
 
 		//Delta Time 
+
+		//KeyCode.W replaced by player settings for Jump
+		//Using a command type?
+		if (Input.GetKeyDown(KeyCode.Space) && currentJumps != 0) {
+			if (isAirborne) {
+				rigidBody.velocity = new Vector2 (rigidBody.velocity.x, 0);
+				rigidBody.AddForce(new Vector2(0, jumpingForce));
+				currentJumps -= 1;
+			} else {
+				rigidBody.AddForce(new Vector2(0, jumpingForce));
+				currentJumps -= 1;
+				isAirborne = true;
+			}
+
+		}
+
+		//Air Dash
+		if (Input.GetKeyDown(KeyCode.K) && isAirborne && currentDashes != 0 && !isDashing) {
+			isDashing = true;
+			playerAirdash ();
+		}
+
 
 		if (isDashing) {
 			if ((dashTime -= Time.deltaTime) < 0) {
@@ -55,31 +87,27 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 
+		anim.SetFloat ("PlayerSpeed", rigidBody.velocity.x);
+
+		verticalSpeed = rigidBody.velocity.y;
 
 	}
 
+	//TODO: Could put a trigger right above platforms and a collider on the player's feet when they hit that trigger to reset jumps.
+
+
+	//Reading these commands can be MISSED because they are in fixed update - only forces that are one offs need to be in normal update, like jump
 	void FixedUpdate () {
 		
-		//KeyCode.W replaced by player settings for Jump
-		//Using a command type?
-		if (Input.GetKeyDown(KeyCode.Space) && currentJumps != 0) {
-			rigidBody.AddForce(new Vector2(0, jumpingForce));
-			currentJumps -= 1;
-			isAirborne = true;
-		}
-		if (Input.GetKey(KeyCode.A)) {
+
+		if (Input.GetKey(KeyCode.A)) { // Left
 			rigidBody.AddForce (new Vector2 (-accelerationForce, 0));
-
-		} else if (Input.GetKey(KeyCode.D)) {
+		} else if (Input.GetKey(KeyCode.D)) { // Right
 			rigidBody.AddForce (new Vector2 (accelerationForce, 0));
+
 		}
 
-		//Air Dash
-		if (Input.GetKeyDown(KeyCode.K) && isAirborne && currentDashes != 0 && !isDashing) {
-			isDashing = true;
-			playerAirdash ();
-		}
-
+	
 		checkSpeed ();
 	}
 
@@ -96,9 +124,31 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
+	//This seems bad - testing for now
+	/*
+	void OnTriggerEnter2D (Collider2D coll) {
+		if (coll.gameObject.tag == "Platform" && currentJumps != maxJumps && rigidBody.velocity.y <= 0) {
+			//Debug.Log("Hit ground");
+			currentJumps = maxJumps;
+			currentDashes = maxDashes;
+			isAirborne = false;
+		}
+	}
+*/
+	/* May be costly */
+	void OnTriggerStay2D (Collider2D coll) {
+		if (coll.gameObject.tag == "Platform" && currentJumps != maxJumps && rigidBody.velocity.y <= 0) {
+			//Debug.Log("Hit ground");
+			currentJumps = maxJumps;
+			currentDashes = maxDashes;
+			isAirborne = false;
+		}
+	}
 
 
+	//Will need to add a check to not stop velocity if thrown by something like a bomb.
 	void checkSpeed() {
+		
 		if (Mathf.Abs(rigidBody.velocity.x) > maxVelocity) {
 			if (rigidBody.velocity.x > 0) {
 				//Just set it to a new vector?

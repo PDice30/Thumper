@@ -19,14 +19,16 @@ public class CameraBehavior : MonoBehaviour {
 
 		originalPosition = _camera.transform.position;
 
+		PlayerPrefs.SetInt ("Score", 10);
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		//Called every frame? woof
+		//Probably change to the key down frame and go true false instead of !
 		if (isFollowing) {
-			_camera.orthographicSize = 5;
+			_camera.orthographicSize = 3;
 			_camera.transform.position = new Vector3 (player.transform.position.x, player.transform.position.y, -10);
 		} else {
 			_camera.transform.position = originalPosition;
@@ -37,5 +39,6 @@ public class CameraBehavior : MonoBehaviour {
 			Debug.Log ("PressedC");
 			isFollowing = !isFollowing;
 		}
+			
 	}
 }

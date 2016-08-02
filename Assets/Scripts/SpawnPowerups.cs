@@ -10,10 +10,16 @@ public class SpawnPowerups : MonoBehaviour {
 	public int maxTimeToItemSpawn;
 	public int currentTimeToItemSpawn;
 	public int timeReduction;
+	public int powerUpFrequency;
 
 	// Use this for initialization
+	//TODO: Change all this to Delta Time
+	void Awake() {
+		powerUpFrequency = GameObject.Find ("OptionsAndPrefs").GetComponent<OptionsAndPrefs> ().powerUpFrequency;
+	}
 	void Start () {
-		maxTimeToItemSpawn = 120;
+		//Should spawn every 1 - 9 seconds
+		maxTimeToItemSpawn = 60 * (-powerUpFrequency + 10);
 		currentTimeToItemSpawn = maxTimeToItemSpawn;
 		timeReduction = 1;
 	}
